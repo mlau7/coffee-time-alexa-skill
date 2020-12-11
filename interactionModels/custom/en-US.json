@@ -1,0 +1,199 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "coffee time",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "GetNewFactIntent",
+          "slots": [
+            {
+              "name": "subject",
+              "type": "AMAZON.SearchQuery",
+              "samples": [
+                "{subject}"
+              ]
+            }
+          ],
+          "samples": [
+            "{subject} information",
+            "{subject} trivia",
+            "{subject} fact",
+            "give me an {subject} fact",
+            "tell me an {subject} fact",
+            "a {subject} fact",
+            "tell me a {subject} fact",
+            "give me a {subject} fact",
+            "tell me {subject} trivia",
+            "give me {subject} trivia",
+            "give me some {subject} information",
+            "tell me something about {subject}",
+            "give me something about {subject}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "BrewRecipeIntent",
+          "slots": [],
+          "samples": [
+            "Help me with my brew",
+            "Help me make some coffee",
+            "I want to make some coffee",
+            "Give me a brew recipe",
+            "I want to brew coffee"
+          ]
+        },
+        {
+          "name": "GetBrewRecipeChoice",
+          "slots": [
+            {
+              "name": "method",
+              "type": "BREW_RECIPES",
+              "samples": [
+                "four to six",
+                "four to six method",
+                "James Hoffmann recipe",
+                "James Hoffmann",
+                "Onyx Coffee Lab recipe"
+              ]
+            }
+          ],
+          "samples": [
+            "The {method} method",
+            "The {method} recipe",
+            "I would like to use the {method} method",
+            "I would like to use the {method} recipe",
+            "{method} method",
+            "I would like to use the {method}",
+            "{method} recipe",
+            "The {method}",
+            "I want to use the {method}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "four-six",
+                "synonyms": [
+                  "four to six",
+                  "4-6",
+                  "four-six",
+                  "4 to 6 recipe",
+                  "4 to 6 method",
+                  "4-6 recipe",
+                  "4-6 method",
+                  "four to six recipe",
+                  "four to six method"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "James Hoffmann",
+                "synonyms": [
+                  "James Hoffmann method",
+                  "James Hoffmann recipe"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "Onyx Coffee Lab",
+                "synonyms": [
+                  "Onyx Coffee Lab method",
+                  "Onyx Coffee Lab recipe",
+                  "Onyx Coffee"
+                ]
+              }
+            }
+          ],
+          "name": "BREW_RECIPES"
+        }
+      ],
+      "modelConfiguration": {
+        "fallbackIntentSensitivity": {
+          "level": "LOW"
+        }
+      }
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "GetNewFactIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "subject",
+              "type": "AMAZON.SearchQuery",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.86479400654.778996475683"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GetBrewRecipeChoice",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "method",
+              "type": "BREW_RECIPES",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.843116950863.574158997506"
+              }
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.86479400654.778996475683",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Do you want to learn about espresso or coffee?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.843116950863.574158997506",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Which brew recipe do you want to use, the Onyx Coffee Lab, James Hoffmann, or four to six method?"
+          }
+        ]
+      }
+    ]
+  },
+  "version": "19"
+}
