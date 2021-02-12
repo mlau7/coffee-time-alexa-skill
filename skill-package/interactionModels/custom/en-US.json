@@ -31,6 +31,9 @@
             }
           ],
           "samples": [
+            "I want to know some {subject} facts",
+            "I want a {subject} fact",
+            "I want to know a {subject} fact",
             "{subject} information",
             "{subject} trivia",
             "{subject} fact",
@@ -66,7 +69,7 @@
           "slots": [
             {
               "name": "method",
-              "type": "BREW_RECIPES",
+              "type": "AMAZON.SearchQuery",
               "samples": [
                 "four to six",
                 "four to six method",
@@ -86,6 +89,34 @@
             "{method} recipe",
             "The {method}",
             "I want to use the {method}"
+          ]
+        },
+        {
+          "name": "GetCurrentCoffeeIntent",
+          "slots": [],
+          "samples": [
+            "what is the coffee",
+            "what is the coffee of the week",
+            "what is the coffee of the month",
+            "what beans are you using",
+            "what roast should I use",
+            "what is good coffee to use",
+            "What coffee are you brewing"
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": [
+            "Of course",
+            "Yes please",
+            "Yes"
+          ]
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": [
+            "No thank you",
+            "No"
           ]
         }
       ],
@@ -162,7 +193,7 @@
           "slots": [
             {
               "name": "method",
-              "type": "BREW_RECIPES",
+              "type": "AMAZON.SearchQuery",
               "elicitationRequired": true,
               "confirmationRequired": false,
               "prompts": {
@@ -195,5 +226,5 @@
       }
     ]
   },
-  "version": "19"
+  "version": "30"
 }

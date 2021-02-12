@@ -14,11 +14,18 @@ const {
   getDialogState,
 } = require('ask-sdk-core');
 
-const SKILL_NAME = 'Coffee Time';
+const SKILL_NAME = 'Coffee Time by Constant Coffee Lab';
 const GET_FACT_MESSAGE = 'Here\'s your fact: ';
 const HELP_MESSAGE = 'You can say tell me a coffee fact, or, you can say exit... What can I help you with?';
 const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye!';
+
+// Function to help set question for yes/no handler
+function setQuestion(handlerInput, questionAsked) {
+  const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+  sessionAttributes.questionAsked = questionAsked;
+  handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+}
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -26,8 +33,8 @@ const LaunchRequestHandler = {
       return request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-      const welcomeOutput = 'Welcome to ' + SKILL_NAME + '. I currently know facts about coffee and espresso, and I can help you with some v60 recipes. What would you like to do?';
-      const welcomeReprompt = 'Would you like a brew recipe or some coffee knowledge?';
+      const welcomeOutput = 'Welcome to ' + SKILL_NAME + '. I can tell you facts about coffee and espresso, help you brew coffee, and tell you about the coffee of the month. What would you like to do?';
+      const welcomeReprompt = 'Would you like a brew recipe, some coffee knowledge, or the coffee of the month?';
       
       return handlerInput.responseBuilder
         .speak(welcomeOutput)
@@ -73,8 +80,8 @@ const BrewRecipeHandler = {
     // const randomFact = await httpGet(url);
     // const speechOutput = 'Your subject is: ' + subjectValue + '.<break time="1s"/> ' + GET_FACT_MESSAGE + randomFact;
     // const repromptFact = 'Do you want to hear another ' + subjectValue + ' fact?';
-    const brewRecipeIntro = 'There are 3 Hario v60 brew recipes you can choose from. The Onyx Coffee Lab recipe, a recipe by James Hoffmann, and the four-six method. Which recipe would you like to use?';
-    const brewReprompt = 'Which v60 method would you like to choose?';
+    const brewRecipeIntro = 'There are 3 brew recipes you can choose from. The Constant Coffee Lab recipe, a recipe by James Hoffmann, and the four-six method. Which recipe would you like to use?';
+    const brewReprompt = 'Which brew recipe would you like to choose?';
     
     return handlerInput.responseBuilder
       .speak(brewRecipeIntro)
@@ -107,11 +114,104 @@ const GetBrewRecipeChoiceHandler = {
     
     return handlerInput.responseBuilder
       .speak(presentBrewMethod)
-      //.withSimpleCard(SKILL_NAME, randomFact)
+      .withSimpleCard(SKILL_NAME, brewRecipe)
       .reprompt(brewReprompt)
       .getResponse();
   },
 };
+
+// Asking Alexa to show what coffee beans are currently in season
+const GetCurrentCoffeeIntentHandler = {
+  canHandle(handlerInput) {
+      const request = handlerInput.requestEnvelope.request;
+      return (request.type === 'IntentRequest' && request.intent.name === 'GetCurrentCoffeeIntent');
+  },
+  handle(handlerInput) {
+      
+      const currentCoffeeOutput = 'We are currently using our Fireplace Sipping coffee. This Columbian single origin has hints of milk chocolate, dried fig, and a light orange peel finish.' + '<break time="1s"/>' + ' Would you like to purchase this coffee?';
+      setQuestion(handlerInput, 'WouldYouLiketoPurchaseCoffee');
+      console.log(handlerInput.attributesManager.getSessionAttributes().questionAsked);
+      const welcomeReprompt = 'Would you like to purchase our choice coffee this month?';
+      
+      return handlerInput.responseBuilder
+        .speak(currentCoffeeOutput)
+        .reprompt(welcomeReprompt)
+        .getResponse();
+  },
+};
+
+// Yes handler for purchasing coffee. This can be customized for each yes/no exchange
+const YesPurchaseHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent'
+            && handlerInput.attributesManager.getSessionAttributes().questionAsked === 'WouldYouLiketoPurchaseCoffee';
+    },
+    handle(handlerInput) {
+         setQuestion(handlerInput, null);
+         const purchaseOutput = 'Adding the Fireplace Sipping Coffee from Constant Coffee Lab to your Amazon cart. Would you like to complete this purchase?';
+         setQuestion(handlerInput, 'WouldYouLiketoCompletePurchase');
+         const welcomeReprompt = 'Would you like to finish your purchase?';
+         
+         return handlerInput.responseBuilder
+            .speak(purchaseOutput)
+            .reprompt(welcomeReprompt)
+            .getResponse();
+    }
+}
+
+const YesCompleteHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent'
+            && handlerInput.attributesManager.getSessionAttributes().questionAsked === 'WouldYouLiketoCompletePurchase';
+    },
+    handle(handlerInput) {
+         setQuestion(handlerInput, null);
+         const checkOutOutput = 'Checking out.' + '<break time="500ms"/>' + ' Your order for Fireplace Sipping is shipping soon!';
+         
+         return handlerInput.responseBuilder
+            .speak(checkOutOutput)
+            .getResponse();
+    }
+}
+
+// No handler for purchasing coffee. This can be customized for each yes/no exchange
+const NoPurchaseHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent'
+            && handlerInput.attributesManager.getSessionAttributes().questionAsked === 'WouldYouLiketoPurchaseCoffee';
+    },
+    handle(handlerInput) {
+        setQuestion(handlerInput, null);
+        const noOutput = 'Okay, not this time. Thanks for using Coffee Time!'
+        const welcomeReprompt = 'what else would you like to do?';
+        
+        return handlerInput.responseBuilder
+            .speak(noOutput)
+            .reprompt(welcomeReprompt)
+            .getResponse();
+    }
+}
+
+const NoCompleteHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent'
+            && handlerInput.attributesManager.getSessionAttributes().questionAsked === 'WouldYouLiketoCompletePurchase';
+    },
+    handle(handlerInput) {
+         setQuestion(handlerInput, null);
+         const cancelOutput = 'Cancelled the purchase. The item is still in your cart. What else would you like to do?';
+         const welcomeReprompt = 'what else would you like to do?';
+         
+         return handlerInput.responseBuilder
+            .speak(cancelOutput)
+            .reprompt(welcomeReprompt)
+            .getResponse();
+    }
+}
 
 const HelpHandler = {
   canHandle(handlerInput) {
@@ -175,6 +275,11 @@ exports.handler = skillBuilder
     GetNewFactHandler,
     BrewRecipeHandler,
     GetBrewRecipeChoiceHandler,
+    GetCurrentCoffeeIntentHandler,
+    YesPurchaseHandler,
+    YesCompleteHandler,
+    NoPurchaseHandler,
+    NoCompleteHandler,
     HelpHandler,
     ExitHandler,
     SessionEndedRequestHandler
